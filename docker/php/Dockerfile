@@ -15,7 +15,16 @@ WORKDIR /var/www
 COPY . .
 
 RUN composer install --no-interaction \
-    && chown -R www-data:www-data storage bootstrap/cache
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# Create log file and set permissions explicitly
+RUN touch storage/logs/laravel.log \
+    && chown www-data:www-data storage/logs/laravel.log \
+    && chmod 664 storage/logs/laravel.log
+
+COPY docker/php/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 9000
-CMD ["php-fpm"]
+ENTRYPOINT ["/entrypoint.sh"]

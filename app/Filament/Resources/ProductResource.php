@@ -141,6 +141,9 @@ class ProductResource extends Resource
                     ->label('Active')
                     ->boolean(),
             ])
+            ->recordUrl(fn (Product $record) =>
+                route('filament.admin.resources.products.view', $record)
+            )
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('category', 'name'),
@@ -167,6 +170,7 @@ class ProductResource extends Resource
             'index'  => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
             'edit'   => Pages\EditProduct::route('/{record}/edit'),
+            'view'   => Pages\ViewProduct::route('/{record}'),
         ];
     }
 }
