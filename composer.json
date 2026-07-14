@@ -12,7 +12,7 @@
         "flowframe/laravel-trend": "^0.5.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "openspout/openspout": "^4.0"
+        "openspout/openspout": ">=4.23 <4.32"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
