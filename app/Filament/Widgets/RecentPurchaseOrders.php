@@ -9,7 +9,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class RecentPurchaseOrders extends BaseWidget
 {
-    protected static ?string $heading = 'Recent Purchase Orders';
+    protected static ?string $heading = 'Recent Orders';
     protected static ?int $sort = 4;
     protected int | string | array $columnSpan = 'full';
 
@@ -20,11 +20,11 @@ class RecentPurchaseOrders extends BaseWidget
                 PurchaseOrder::query()
                     ->with(['supplier', 'warehouse', 'items'])
                     ->latest()
-                    ->limit(10)
+                    ->limit(8)
             )
             ->columns([
                 Tables\Columns\TextColumn::make('po_number')
-                    ->label('PO Number')
+                    ->label('Order No.')
                     ->weight('bold')
                     ->copyable(),
 
@@ -32,8 +32,19 @@ class RecentPurchaseOrders extends BaseWidget
                     ->label('Supplier'),
 
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match($state) {
+                        'draft'              => 'Draft',
+                        'sent'               => 'Sent to Supplier',
+                        'confirmed'          => 'Confirmed',
+                        'shipped'            => 'Shipped',
+                        'partially_received' => 'Partially Received',
+                        'received'           => 'Fully Received',
+                        'cancelled'          => 'Cancelled',
+                        default              => ucfirst($state),
+                    })
+                    ->color(fn (string $state): string => match($state) {
                         'draft'              => 'gray',
                         'sent'               => 'info',
                         'confirmed'          => 'primary',
@@ -45,30 +56,40 @@ class RecentPurchaseOrders extends BaseWidget
                     }),
 
                 Tables\Columns\TextColumn::make('order_date')
-                    ->date('d M Y')
-                    ->sortable(),
+                    ->label('Ordered')
+                    ->date('d M Y'),
 
                 Tables\Columns\TextColumn::make('expected_date')
                     ->label('Expected')
-                    ->date('d M Y'),
+                    ->date('d M Y')
+                    ->placeholder('Not set')
+                    ->color(fn ($record) =>
+                        $record->expected_date &&
+                        $record->expected_date->isPast() &&
+                        !in_array($record->status, ['received', 'cancelled'])
+                            ? 'danger' : null
+                    ),
 
                 Tables\Columns\TextColumn::make('items_count')
                     ->label('Items')
-                    ->counts('items'),
-
-                Tables\Columns\TextColumn::make('total')
-                    ->money('USD'),
-
-                Tables\Columns\TextColumn::make('warehouse.name')
+                    ->counts('items')
                     ->badge()
                     ->color('gray'),
+
+                Tables\Columns\TextColumn::make('warehouse.name')
+                    ->label('Deliver To')
+                    ->badge()
+                    ->color('info'),
             ])
             ->actions([
-                Tables\Actions\Action::make('view')
-                    ->icon('heroicon-m-eye')
+                Tables\Actions\Action::make('open')
+                    ->label('Open')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (PurchaseOrder $record) =>
                         route('filament.admin.resources.purchase-orders.edit', $record)
                     ),
-            ]);
+            ])
+            ->emptyStateHeading('No orders yet')
+            ->emptyStateIcon('heroicon-o-shopping-cart');
     }
 }

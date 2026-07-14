@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class LowStockTable extends BaseWidget
 {
-    protected static ?string $heading = 'Low Stock — Needs Reordering';
+    protected static ?string $heading = '⚠ Products Running Low — Action Required';
     protected static ?int $sort = 3;
     protected int | string | array $columnSpan = 'full';
 
@@ -26,49 +26,61 @@ class LowStockTable extends BaseWidget
                     ->with(['stockLevels.warehouse', 'supplier', 'category'])
             )
             ->columns([
-                Tables\Columns\TextColumn::make('sku')
-                    ->label('SKU')
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Product')
                     ->weight('bold')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-
                 Tables\Columns\TextColumn::make('category.name')
+                    ->label('Category')
                     ->badge()
-                    ->color('gray'),
-
-                Tables\Columns\TextColumn::make('supplier.name')
-                    ->label('Supplier'),
+                    ->color('gray')
+                    ->placeholder('No category'),
 
                 Tables\Columns\TextColumn::make('stockLevels')
                     ->label('Current Stock')
                     ->formatStateUsing(fn ($record) =>
-                        $record->stockLevels->sum('quantity')
+                        $record->stockLevels->sum('quantity') . ' ' . $record->unit
                     )
-                    ->color('danger'),
+                    ->color('danger')
+                    ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('reorder_point')
-                    ->label('Reorder At'),
+                    ->label('Should Not Go Below')
+                    ->formatStateUsing(fn ($record) =>
+                        $record->reorder_point . ' ' . $record->unit
+                    )
+                    ->color('warning'),
 
                 Tables\Columns\TextColumn::make('reorder_qty')
-                    ->label('Order Qty'),
+                    ->label('Suggested Order Qty')
+                    ->formatStateUsing(fn ($record) =>
+                        $record->reorder_qty . ' ' . $record->unit
+                    ),
+
+                Tables\Columns\TextColumn::make('supplier.name')
+                    ->label('Order From')
+                    ->placeholder('No supplier set'),
 
                 Tables\Columns\TextColumn::make('supplier.lead_time_days')
-                    ->label('Lead Time')
-                    ->suffix(' days'),
+                    ->label('Delivery Time')
+                    ->formatStateUsing(fn ($record) =>
+                        $record->supplier
+                            ? $record->supplier->lead_time_days . ' days'
+                            : '—'
+                    ),
             ])
             ->actions([
-                Tables\Actions\Action::make('createPO')
-                    ->label('Create PO')
-                    ->icon('heroicon-m-plus')
+                Tables\Actions\Action::make('createOrder')
+                    ->label('Create Order')
+                    ->icon('heroicon-m-shopping-cart')
                     ->color('warning')
                     ->url(fn (Product $record) =>
                         route('filament.admin.resources.purchase-orders.create')
                     ),
             ])
-            ->emptyStateHeading('All stock levels are healthy')
+            ->emptyStateHeading('All products have sufficient stock')
             ->emptyStateIcon('heroicon-o-check-circle')
-            ->emptyStateDescription('No products are below their reorder point.');
+            ->emptyStateDescription('Nothing needs to be restocked right now.');
     }
 }

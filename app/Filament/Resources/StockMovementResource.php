@@ -15,10 +15,10 @@ use Filament\Tables\Table;
 class StockMovementResource extends Resource
 {
     protected static ?string $model = StockMovement::class;
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
-    protected static ?string $navigationGroup = 'Inventory';
-    protected static ?int $navigationSort = 2;
-    protected static ?string $navigationLabel = 'Stock Movements';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static ?string $navigationGroup = 'Stock';
+    protected static ?string $navigationLabel = 'Stock History';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -69,29 +69,49 @@ class StockMovementResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('moved_at')
-                    ->label('Date')
-                    ->dateTime('d M Y H:i')
+                    ->label('Date & Time')
+                    ->dateTime('d M Y, H:i')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('product.name')
+                    ->label('Product')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('warehouse.name')
+                    ->label('Location')
                     ->badge()
                     ->color('gray'),
 
-                Tables\Columns\BadgeColumn::make('type')
-                    ->colors([
-                        'success' => 'receipt',
-                        'danger'  => 'issue',
-                        'warning' => 'adjustment',
-                        'info'    => 'transfer',
-                        'gray'    => 'return',
-                    ]),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Action')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match($state) {
+                        'receipt'    => 'Stock Added',
+                        'issue'      => 'Stock Removed',
+                        'adjustment' => 'Correction',
+                        'transfer'   => 'Transferred',
+                        'return'     => 'Returned',
+                        default      => ucfirst($state),
+                    })
+                    ->color(fn (string $state): string => match($state) {
+                        'receipt'    => 'success',
+                        'issue'      => 'danger',
+                        'adjustment' => 'warning',
+                        'transfer'   => 'info',
+                        'return'     => 'gray',
+                        default      => 'gray',
+                    }),
 
                 Tables\Columns\TextColumn::make('quantity')
-                    ->sortable(),
+                    ->label('Qty Changed')
+                    ->formatStateUsing(fn ($state) =>
+                        ($state > 0 ? '+' : '') . $state
+                    )
+                    ->color(fn ($state): string =>
+                        $state > 0 ? 'success' : 'danger'
+                    )
+                    ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('quantity_before')
                     ->label('Before'),
@@ -99,28 +119,47 @@ class StockMovementResource extends Resource
                 Tables\Columns\TextColumn::make('quantity_after')
                     ->label('After'),
 
+                Tables\Columns\TextColumn::make('notes')
+                    ->label('Reason / Notes')
+                    ->limit(40)
+                    ->placeholder('—'),
+
                 Tables\Columns\TextColumn::make('reference')
-                    ->searchable(),
+                    ->label('Reference')
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('By'),
+                    ->label('Done By')
+                    ->placeholder('System'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
+                    ->label('Filter by Action')
                     ->options([
-                        'receipt'    => 'Receipt',
-                        'issue'      => 'Issue',
-                        'adjustment' => 'Adjustment',
-                        'transfer'   => 'Transfer',
-                        'return'     => 'Return',
+                        'receipt'    => 'Stock Added',
+                        'issue'      => 'Stock Removed',
+                        'adjustment' => 'Correction',
+                        'transfer'   => 'Transferred',
+                        'return'     => 'Returned',
                     ]),
 
                 Tables\Filters\SelectFilter::make('warehouse')
-                    ->relationship('warehouse', 'name'),
+                    ->relationship('warehouse', 'name')
+                    ->label('Filter by Location'),
+
+                Tables\Filters\Filter::make('today')
+                    ->label('Today only')
+                    ->query(fn ($query) => $query->whereDate('moved_at', today()))
+                    ->toggle(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-            ]);
+                Tables\Actions\ViewAction::make()
+                    ->label('Details'),
+            ])
+            ->emptyStateHeading('No stock history yet')
+            ->emptyStateDescription('Every time stock is added or removed it will appear here.')
+            ->emptyStateIcon('heroicon-o-clock');
     }
 
     public static function getPages(): array

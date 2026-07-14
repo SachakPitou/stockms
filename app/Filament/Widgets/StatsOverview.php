@@ -17,46 +17,48 @@ class StatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalProducts  = Product::where('is_active', true)->count();
-        $lowStockCount  = app(StockService::class)->getLowStockProducts()->count();
-        $pendingOrders  = PurchaseOrder::whereIn('status', ['draft', 'sent', 'confirmed', 'shipped'])->count();
+        $totalProducts = Product::where('is_active', true)->count();
 
-        // Total stock value = sum of (quantity * unit_cost) across all levels
+        $lowStockCount = app(StockService::class)->getLowStockProducts()->count();
+
+        $pendingOrders = PurchaseOrder::whereIn('status', [
+            'draft', 'sent', 'confirmed', 'shipped'
+        ])->count();
+
         $stockValue = StockLevel::join('products', 'products.id', '=', 'stock_levels.product_id')
             ->selectRaw('SUM(stock_levels.quantity * products.unit_cost) as total')
             ->value('total') ?? 0;
 
-        // Movement trend — compare this week vs last week
-        $thisWeek = StockMovement::where('moved_at', '>=', now()->startOfWeek())->count();
-        $lastWeek = StockMovement::whereBetween('moved_at', [
-            now()->subWeek()->startOfWeek(),
-            now()->subWeek()->endOfWeek(),
-        ])->count();
-
-        $movementTrend       = $lastWeek > 0 ? (($thisWeek - $lastWeek) / $lastWeek) * 100 : 0;
-        $movementTrendColor  = $movementTrend >= 0 ? 'success' : 'danger';
-        $movementTrendIcon   = $movementTrend >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down';
+        $todayMovements = StockMovement::whereDate('moved_at', today())->count();
 
         return [
             Stat::make('Total Products', $totalProducts)
-                ->description('Active products in system')
+                ->description('Active products being tracked')
                 ->descriptionIcon('heroicon-m-archive-box')
                 ->color('primary'),
 
-            Stat::make('Low Stock Alerts', $lowStockCount)
-                ->description($lowStockCount > 0 ? 'Products need reordering' : 'All stock levels healthy')
-                ->descriptionIcon($lowStockCount > 0 ? 'heroicon-m-exclamation-triangle' : 'heroicon-m-check-circle')
+            Stat::make('Running Low', $lowStockCount)
+                ->description(
+                    $lowStockCount > 0
+                        ? 'Products need to be restocked'
+                        : 'All products have sufficient stock'
+                )
+                ->descriptionIcon(
+                    $lowStockCount > 0
+                        ? 'heroicon-m-exclamation-triangle'
+                        : 'heroicon-m-check-circle'
+                )
                 ->color($lowStockCount > 0 ? 'danger' : 'success'),
 
-            Stat::make('Pending Orders', $pendingOrders)
-                ->description('Purchase orders in progress')
-                ->descriptionIcon('heroicon-m-truck')
+            Stat::make('Orders in Progress', $pendingOrders)
+                ->description('Orders not yet fully received')
+                ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('warning'),
 
-            Stat::make('Total Stock Value', '$' . number_format($stockValue, 2))
-                ->description('Based on unit cost × quantity')
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success'),
+            Stat::make('Stock Movements Today', $todayMovements)
+                ->description('Items added or removed today')
+                ->descriptionIcon('heroicon-m-arrows-right-left')
+                ->color('info'),
         ];
     }
 }
