@@ -2,48 +2,56 @@ name: Deploy to A2 Hosting
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   deploy:
-    name: Deploy to production
+    name: Deploy to A2 Hosting
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Deploy via SSH to A2 Hosting
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.A2_HOST }}
           username: ${{ secrets.A2_USER }}
-          key: ${{ secrets.A2_SSH_KEY }}
+          key: ${{ secrets.A2_PRIVATE_KEY }}
           port: ${{ secrets.A2_PORT }}
           script: |
             set -e
+            cd ~/stockms_app
 
-            echo "=== Navigating to project ==="
-            cd ${{ secrets.A2_PATH }}
+            echo "── Before pull ──"
+            git log -1 --oneline
 
-            echo "=== Pulling latest code from GitHub ==="
+            # Force sync to latest main
             git fetch origin main
             git reset --hard origin/main
 
-            echo "=== Installing PHP dependencies ==="
-            composer install --no-dev --optimize-autoloader --no-interaction
+            echo "── After pull ──"
+            git log -1 --oneline
 
-            echo "=== Running database migrations ==="
+            # Install dependencies
+            /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Clear ghost caches
+            rm -f bootstrap/cache/config.php
+            rm -f bootstrap/cache/services.php
+            rm -f bootstrap/cache/packages.php
+            rm -f bootstrap/cache/routes-v7.php
+
+            # Run migrations and optimize
             php artisan migrate --force
-
-            echo "=== Clearing and rebuilding cache ==="
+            php artisan optimize:clear
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             php artisan filament:cache-components
 
-            echo "=== Fixing storage permissions ==="
+            # Fix permissions
             chmod -R 775 storage bootstrap/cache
 
-            echo "✅ Deployment complete!"
+            echo "✅ Deployment complete at $(date)"
