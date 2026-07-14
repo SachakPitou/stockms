@@ -1,0 +1,49 @@
+name: Deploy to A2 Hosting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH to A2 Hosting
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.A2_HOST }}
+          username: ${{ secrets.A2_USER }}
+          key: ${{ secrets.A2_SSH_KEY }}
+          port: ${{ secrets.A2_PORT }}
+          script: |
+            set -e
+
+            echo "=== Navigating to project ==="
+            cd ${{ secrets.A2_PATH }}
+
+            echo "=== Pulling latest code from GitHub ==="
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "=== Installing PHP dependencies ==="
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "=== Running database migrations ==="
+            php artisan migrate --force
+
+            echo "=== Clearing and rebuilding cache ==="
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan filament:cache-components
+
+            echo "=== Fixing storage permissions ==="
+            chmod -R 775 storage bootstrap/cache
+
+            echo "✅ Deployment complete!"
