@@ -33,10 +33,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP 8.3
+      - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.2'
           extensions: mbstring, dom, fileinfo, pdo_mysql, redis, zip, intl, gd, bcmath
 
       - name: Cache Composer packages
@@ -122,7 +122,8 @@ jobs:
             /opt/cpanel/composer/bin/composer install \
               --no-dev \
               --optimize-autoloader \
-              --no-interaction
+              --no-interaction \
+              --ignore-platform-reqs
 
             echo "── Clearing ghost caches ──"
             rm -f bootstrap/cache/config.php
