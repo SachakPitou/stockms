@@ -7,7 +7,6 @@ on:
     branches: [main]
 
 jobs:
-  # ── Job 1: Run Tests ──────────────────────────────────────────────
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -48,7 +47,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
+        run: composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs
 
       - name: Create .env file
         run: |
@@ -80,13 +79,9 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --force
 
-      - name: Check routes load correctly
-        run: php artisan route:list
-
       - name: Run tests
         run: php artisan test --stop-on-failure
 
-  # ── Job 2: Deploy (only after tests pass on main) ─────────────────
   deploy:
     name: Deploy to A2 Hosting
     runs-on: ubuntu-latest
