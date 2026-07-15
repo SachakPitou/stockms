@@ -28,6 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->profile()
+            ->brandName('MAT Telecom Stock') 
+            ->brandLogo(asset('images/matinternet.png')) 
+            ->brandLogoHeight('150px') 
+            ->favicon(asset('images/matinternetpng'))
             ->colors([
                 'primary' => Color::Amber,
             ])
