@@ -31,12 +31,6 @@ class LowStockTable extends BaseWidget
                     ->weight('bold')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('category.name')
-                    ->label('Category')
-                    ->badge()
-                    ->color('gray')
-                    ->placeholder('No category'),
-
                 Tables\Columns\TextColumn::make('stockLevels')
                     ->label('Current Stock')
                     ->formatStateUsing(fn ($record) =>
@@ -46,29 +40,38 @@ class LowStockTable extends BaseWidget
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('reorder_point')
-                    ->label('Should Not Go Below')
+                    ->label('Minimum Level')
                     ->formatStateUsing(fn ($record) =>
                         $record->reorder_point . ' ' . $record->unit
                     )
                     ->color('warning'),
 
+                // Hidden by default
                 Tables\Columns\TextColumn::make('reorder_qty')
                     ->label('Suggested Order Qty')
                     ->formatStateUsing(fn ($record) =>
                         $record->reorder_qty . ' ' . $record->unit
-                    ),
+                    )
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('supplier.name')
                     ->label('Order From')
-                    ->placeholder('No supplier set'),
+                    ->placeholder('No supplier set')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('supplier.lead_time_days')
                     ->label('Delivery Time')
                     ->formatStateUsing(fn ($record) =>
-                        $record->supplier
-                            ? $record->supplier->lead_time_days . ' days'
-                            : '—'
-                    ),
+                        $record->supplier ? $record->supplier->lead_time_days . ' days' : '—'
+                    )
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Category')
+                    ->badge()
+                    ->color('gray')
+                    ->placeholder('No category')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Tables\Actions\Action::make('createOrder')

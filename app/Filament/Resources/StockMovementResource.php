@@ -69,7 +69,7 @@ class StockMovementResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('moved_at')
-                    ->label('Date & Time')
+                    ->label('Date')
                     ->dateTime('d M Y, H:i')
                     ->sortable(),
 
@@ -77,11 +77,6 @@ class StockMovementResource extends Resource
                     ->label('Product')
                     ->searchable()
                     ->sortable(),
-
-                Tables\Columns\TextColumn::make('warehouse.name')
-                    ->label('Location')
-                    ->badge()
-                    ->color('gray'),
 
                 Tables\Columns\TextColumn::make('type')
                     ->label('Action')
@@ -113,16 +108,24 @@ class StockMovementResource extends Resource
                     )
                     ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('quantity_before')
-                    ->label('Before'),
-
                 Tables\Columns\TextColumn::make('quantity_after')
-                    ->label('After'),
+                    ->label('Stock After'),
 
                 Tables\Columns\TextColumn::make('notes')
-                    ->label('Reason / Notes')
-                    ->limit(40)
+                    ->label('Reason')
+                    ->limit(30)
                     ->placeholder('—'),
+
+                // Hidden by default
+                Tables\Columns\TextColumn::make('warehouse.name')
+                    ->label('Location')
+                    ->badge()
+                    ->color('gray')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('quantity_before')
+                    ->label('Stock Before')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('reference')
                     ->label('Reference')
@@ -131,7 +134,8 @@ class StockMovementResource extends Resource
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Done By')
-                    ->placeholder('System'),
+                    ->placeholder('System')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')

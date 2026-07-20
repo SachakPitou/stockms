@@ -151,11 +151,6 @@ class ProductResource extends Resource
                     ->color('gray')
                     ->placeholder('No category'),
 
-                Tables\Columns\TextColumn::make('supplier.name')
-                    ->label('Supplier')
-                    ->placeholder('No supplier')
-                    ->toggleable(),
-
                 Tables\Columns\TextColumn::make('unit')
                     ->label('Unit')
                     ->badge()
@@ -171,14 +166,27 @@ class ProductResource extends Resource
                             ? 'danger' : 'success'
                     ),
 
+                // Hidden by default
+                Tables\Columns\TextColumn::make('supplier.name')
+                    ->label('Supplier')
+                    ->placeholder('No supplier')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('reorder_point')
                     ->label('Alert Below')
                     ->suffix(fn ($record) => ' ' . $record->unit)
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('unit_cost')
+                    ->label('Unit Cost')
+                    ->money('USD')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('name')
             ->filters([

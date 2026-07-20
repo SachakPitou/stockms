@@ -236,11 +236,6 @@ class PurchaseOrderResource extends Resource
                         default              => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('order_date')
-                    ->label('Order Date')
-                    ->date('d M Y')
-                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('expected_date')
                     ->label('Expected Arrival')
                     ->date('d M Y')
@@ -258,10 +253,22 @@ class PurchaseOrderResource extends Resource
                     ->badge()
                     ->color('gray'),
 
+                // Hidden by default
+                Tables\Columns\TextColumn::make('order_date')
+                    ->label('Order Date')
+                    ->date('d M Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('warehouse.name')
                     ->label('Deliver To')
                     ->badge()
-                    ->color('info'),
+                    ->color('info')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('total')
+                    ->money('USD')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('tracking_number')
                     ->label('Tracking')

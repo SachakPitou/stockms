@@ -33,47 +33,53 @@ class StockLevelResource extends Resource
         return $table
             ->defaultSort('updated_at', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
-                    ->label('Product')
-                    ->searchable()
-                    ->sortable()
-                    ->weight('bold'),
+            Tables\Columns\TextColumn::make('product.name')
+                ->label('Product')
+                ->searchable()
+                ->sortable()
+                ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('product.category.name')
-                    ->label('Category')
-                    ->badge()
-                    ->color('gray')
-                    ->placeholder('No category'),
+            Tables\Columns\TextColumn::make('warehouse.name')
+                ->label('Location')
+                ->badge()
+                ->color('info'),
 
-                Tables\Columns\TextColumn::make('warehouse.name')
-                    ->label('Location')
-                    ->badge()
-                    ->color('info'),
+            Tables\Columns\TextColumn::make('quantity')
+                ->label('Qty in Stock')
+                ->sortable()
+                ->formatStateUsing(fn (StockLevel $record) =>
+                    $record->quantity . ' ' . $record->product->unit
+                )
+                ->color(fn (StockLevel $record): string => match(true) {
+                    $record->quantity <= 0                               => 'danger',
+                    $record->quantity <= $record->product->reorder_point => 'warning',
+                    default                                              => 'success',
+                })
+                ->weight('bold')
+                ->description(fn (StockLevel $record): string => match(true) {
+                    $record->quantity <= 0                               => '⚠ Out of stock',
+                    $record->quantity <= $record->product->reorder_point => '⚠ Running low',
+                    default                                              => 'Sufficient',
+                }),
 
-                Tables\Columns\TextColumn::make('quantity')
-                    ->label('Qty in Stock')
-                    ->sortable()
-                    ->formatStateUsing(fn (StockLevel $record) =>
-                        $record->quantity . ' ' . $record->product->unit
-                    )
-                    ->color(fn (StockLevel $record): string => match(true) {
-                        $record->quantity <= 0                                => 'danger',
-                        $record->quantity <= $record->product->reorder_point  => 'warning',
-                        default                                               => 'success',
-                    })
-                    ->weight('bold')
-                    ->description(fn (StockLevel $record): string => match(true) {
-                        $record->quantity <= 0                                => '⚠ Out of stock',
-                        $record->quantity <= $record->product->reorder_point  => '⚠ Running low',
-                        default                                               => 'Sufficient',
-                    }),
+            Tables\Columns\TextColumn::make('product.category.name')
+                ->label('Category')
+                ->badge()
+                ->color('gray')
+                ->placeholder('No category')
+                ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Last Updated')
-                    ->since()
-                    ->sortable(),
-            ])
+            Tables\Columns\TextColumn::make('product.supplier.name')
+                ->label('Supplier')
+                ->placeholder('—')
+                ->toggleable(isToggledHiddenByDefault: true),
 
+            Tables\Columns\TextColumn::make('updated_at')
+                ->label('Last Updated')
+                ->since()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+        ])
             ->filters([
                 Tables\Filters\SelectFilter::make('warehouse')
                     ->relationship('warehouse', 'name')
