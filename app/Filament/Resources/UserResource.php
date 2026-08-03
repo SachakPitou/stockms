@@ -41,20 +41,42 @@ class UserResource extends Resource
                     Forms\Components\TextInput::make('password')
                         ->password()
                         ->revealable()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                        ->dehydrated(fn ($state) => filled($state))
                         ->required(fn (string $operation): bool => $operation === 'create')
                         ->minLength(8)
                         ->maxLength(255)
-                        ->confirmed(),
+                        ->confirmed()
+                        ->dehydrated(fn ($state) => filled($state)),
 
                     Forms\Components\TextInput::make('password_confirmation')
                         ->password()
                         ->revealable()
                         ->label('Confirm Password')
-                        ->dehydrated(false)
-                        ->required(fn (string $operation): bool => $operation === 'create'),
+                        ->required(fn (string $operation): bool => $operation === 'create')
+                        ->dehydrated(false),
                 ])->columns(2),
+                Forms\Components\Section::make('Role & Access')
+                    ->description('Set what this user can do in the system.')
+                    ->schema([
+                        Forms\Components\Select::make('roles')
+                            ->label('Role')
+                            ->options([
+                                'Admin'                   => 'Admin — Full system access',
+                                'HR Verifier'             => 'HR Verifier — Can verify purchase requests',
+                                'HR Approver'             => 'HR Approver — Can approve PRs and manage stock',
+                                'Technical Team PP'       => 'Technical Team PP — Phnom Penh field team',
+                                'Technical Team Poipet'   => 'Technical Team Poipet — Poipet field team',
+                            ])
+                            ->required()
+                            ->live()
+                            ->helperText('Choose the role that matches this person\'s position.'),
+
+                        Forms\Components\Select::make('warehouse_id')
+                            ->label('Assigned Warehouse')
+                            ->options(\App\Models\Warehouse::pluck('name', 'id'))
+                            ->required(fn (Forms\Get $get) => in_array($get('roles'), ['Technical Team PP', 'Technical Team Poipet']))
+                            ->visible(fn (Forms\Get $get) => in_array($get('roles'), ['Technical Team PP', 'Technical Team Poipet']))
+                            ->helperText('This user will only see stock and equipment for this warehouse.'),
+                    ]),
         ]);
     }
 
@@ -72,7 +94,11 @@ class UserResource extends Resource
                     ->sortable()
                     ->copyable()
                     ->icon('heroicon-m-envelope'),
-
+                Tables\Columns\TextColumn::make('warehouse.name')
+                    ->label('Warehouse')
+                    ->badge()
+                    ->color('info')
+                    ->placeholder('— All (HR/Admin) —'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime('d M Y')
@@ -109,5 +135,9 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit'   => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
     }
 }

@@ -4,9 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Traits\LogsActivity;  // 👈 add this
+use Spatie\Activitylog\LogOptions;    // 👈 add this
 
 class StockMovement extends Model
 {
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->setDescriptionForEvent(fn(string $eventName) => "Stock movement was {$eventName}");
+    }
+
     protected $fillable = [
         'product_id', 'warehouse_id', 'user_id', 'type',
         'quantity', 'quantity_before', 'quantity_after',

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Supplier;
@@ -33,7 +34,17 @@ class ProductResource extends Resource
                         ->maxLength(255)
                         ->columnSpanFull()
                         ->placeholder('e.g. Huawei ONU HG8145V5'),
-
+                    Forms\Components\FileUpload::make('image')
+                        ->label('Product Image')
+                        ->image()
+                        ->imageResizeMode('cover')
+                        ->imageCropAspectRatio('1:1')
+                        ->imageResizeTargetWidth('400')
+                        ->imageResizeTargetHeight('400')
+                        ->directory('products')
+                        ->visibility('public')
+                        ->columnSpanFull()
+                        ->helperText('Upload a photo of this product. Square images work best.'),
                     Forms\Components\Select::make('category_id')
                         ->label('Category')
                         ->options(Category::pluck('name', 'id'))
@@ -70,12 +81,19 @@ class ProductResource extends Resource
                         ->numeric()
                         ->default(10)
                         ->suffix('units')
-                        ->helperText('You will see a warning on the dashboard when stock reaches this number.'),
+                        ->helperText('You will see a warning on the dashboard when stock reaches this number.')
+                        ->visible(fn (Forms\Get $get) => ! $get('is_serialized')),
 
                     Forms\Components\Toggle::make('is_active')
                         ->label('This product is active')
                         ->default(true)
                         ->helperText('Inactive products are hidden from stock operations.'),
+
+                    Forms\Components\Toggle::make('is_serialized')  // 👈 add this block
+                        ->label('Track by Serial Number')
+                        ->helperText('Turn this on for Router/ONU. Stock quantity will be based on how many serial numbers are registered below — you won\'t set a manual quantity.')
+                        ->live()
+                        ->default(false),
                 ])->columns(2),
 
             Forms\Components\Section::make('Pricing & Cost')
@@ -124,7 +142,8 @@ class ProductResource extends Resource
                         ->helperText('How many units to order when restocking.')
                         ->numeric()
                         ->default(50)
-                        ->suffix('units'),
+                        ->suffix('units')
+                        ->visible(fn (Forms\Get $get) => ! $get('is_serialized')),
 
                     Forms\Components\TextInput::make('barcode')
                         ->label('Barcode')
@@ -139,6 +158,11 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('')
+                    ->circular()
+                    ->defaultImageUrl(asset('images/no-image.png'))
+                    ->size(40),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Product Name')
                     ->searchable()
@@ -156,16 +180,58 @@ class ProductResource extends Resource
                     ->badge()
                     ->color('info'),
 
-                Tables\Columns\TextColumn::make('stockLevels_sum_quantity')
-                    ->label('Total Stock')
-                    ->getStateUsing(fn ($record) =>
-                        $record->stockLevels->sum('quantity') . ' ' . $record->unit
-                    )
-                    ->color(fn ($record): string =>
-                        $record->stockLevels->sum('quantity') <= $record->reorder_point
-                            ? 'danger' : 'success'
-                    ),
+                Tables\Columns\TextColumn::make('stock_summary')
+                    ->label('Stock')
+                    ->getStateUsing(function ($record) {
+                        $seesAll = \App\Helpers\WarehouseHelper::seesAllWarehouses();
 
+                        if ($record->is_serialized) {
+                            $unitsQuery = $record->equipmentUnits();
+                            if (! $seesAll) {
+                                $unitsQuery->where('warehouse_id', auth()->user()?->warehouse_id);
+                            }
+                            $available = (clone $unitsQuery)->whereIn('condition', ['new', 'refurbished'])->count();
+                            $inUse     = (clone $unitsQuery)->where('condition', 'in_use')->count();
+                            $total     = (clone $unitsQuery)->count();
+
+                            return "{$total} units ({$available} available, {$inUse} in use)";
+                        }
+
+                        if (! $seesAll) {
+                            $level = $record->stockLevels->firstWhere('warehouse_id', auth()->user()?->warehouse_id);
+                            return ($level->quantity ?? 0) . ' ' . $record->unit;
+                        }
+
+                        // Admin/HR — total + breakdown per warehouse
+                        $total = $record->stockLevels->sum('quantity');
+                        $breakdown = $record->stockLevels
+                            ->filter(fn ($l) => $l->quantity > 0)
+                            ->map(fn ($l) => "{$l->quantity} in {$l->warehouse->name}")
+                            ->implode(', ');
+
+                        return $total . ' ' . $record->unit . ($breakdown ? " ({$breakdown})" : '');
+                    })
+                    ->wrap()
+                    ->color(fn ($record): string => match(true) {
+                        $record->is_serialized => 'gray', // color logic below overrides this for serialized case if needed
+                        $record->stockLevels->sum('quantity') <= $record->reorder_point => 'danger',
+                        default => 'success',
+                    }),
+                Tables\Columns\TextColumn::make('total_stock')
+                    ->label('Stock by Warehouse')
+                    ->getStateUsing(function (Product $record) {
+                        if (! \App\Helpers\WarehouseHelper::seesAllWarehouses()) {
+                            return null; // hidden for non-HR/Admin
+                        }
+                        $levels = $record->stockLevels()->with('warehouse')->get();
+                        if ($levels->isEmpty()) return 'No stock';
+                        return $levels->map(fn($l) =>
+                            $l->warehouse->name . ': ' . $l->quantity . ' ' . $record->unit
+                        )->implode(' | ');
+                    })
+                    ->placeholder('—')
+                    ->visible(fn () => \App\Helpers\WarehouseHelper::seesAllWarehouses())
+                    ->wrap(),
                 // Hidden by default
                 Tables\Columns\TextColumn::make('supplier.name')
                     ->label('Supplier')
@@ -187,6 +253,12 @@ class ProductResource extends Resource
                     ->label('Active')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('is_serialized')
+                    ->label('Serialized')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-qr-code')
+                    ->falseIcon('heroicon-o-minus')
+                    ->trueColor('primary'),
             ])
             ->defaultSort('name')
             ->filters([
@@ -233,5 +305,25 @@ class ProductResource extends Resource
             'edit'   => Pages\EditProduct::route('/{record}/edit'),
             'view'   => Pages\ViewProduct::route('/{record}'),
         ];
+    }
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\EquipmentUnitsRelationManager::class,
+        ];
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()->hasAnyRole(['Admin', 'HR Approver']);
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->hasAnyRole(['Admin', 'HR Approver']);
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->hasRole('Admin');
     }
 }

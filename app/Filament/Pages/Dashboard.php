@@ -16,6 +16,18 @@ class Dashboard extends BaseDashboard
 
     public function getWidgets(): array
     {
+        $user = auth()->user();
+
+        // Technical teams see a simplified dashboard
+        if ($user->hasAnyRole([
+            'Technical Team PP',
+            'Technical Team Poipet',
+        ])) {
+            return [
+                StockMovementChart::class,
+            ];
+        }
+
         return [
             StatsOverview::class,
             StockMovementChart::class,

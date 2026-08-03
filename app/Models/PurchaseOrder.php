@@ -6,10 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\Traits\LogsActivity;   // 👈 add this
+use Spatie\Activitylog\LogOptions;  
 
 class PurchaseOrder extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'total', 'tracking_number', 'received_date'])
+            ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Purchase order was {$eventName}");
+    }
 
     protected $fillable = [
         'po_number', 'supplier_id', 'warehouse_id', 'user_id',
@@ -52,5 +62,9 @@ class PurchaseOrder extends Model
     {
         return ($this->total + $this->freight_cost + $this->customs_duty)
             * $this->exchange_rate;
+    }
+    public function destinationWarehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'destination_warehouse_id');
     }
 }

@@ -67,6 +67,9 @@ class StockMovementResource extends Resource
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            ->modifyQueryUsing(function ($query) {
+                return \App\Helpers\WarehouseHelper::restrictToUserWarehouse($query);
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('moved_at')
                     ->label('Date')

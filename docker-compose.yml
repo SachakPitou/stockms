@@ -13,7 +13,8 @@ services:
       - .:/var/www
     networks:
       - stockms
-
+    environment:
+      - XDG_CONFIG_HOME=/tmp
   nginx:
     image: nginx:1.25-alpine
     container_name: stockms_nginx

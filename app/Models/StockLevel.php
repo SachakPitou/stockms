@@ -7,7 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StockLevel extends Model
 {
-    protected $fillable = ['product_id', 'warehouse_id', 'quantity', 'reserved'];
+    protected $fillable = [
+        'product_id',
+        'warehouse_id',
+        'quantity',
+        'reserved',
+    ];
+
+    protected $casts = [
+        'quantity' => 'integer',
+        'reserved' => 'integer',
+    ];
 
     public function product(): BelongsTo
     {

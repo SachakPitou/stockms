@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StockLevelResource\Pages;
+use App\Models\Product;
 use App\Models\StockLevel;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -32,65 +33,61 @@ class StockLevelResource extends Resource
     {
         return $table
             ->defaultSort('updated_at', 'desc')
+            ->modifyQueryUsing(function ($query) {
+                return \App\Helpers\WarehouseHelper::restrictToUserWarehouse($query);
+            })
             ->columns([
-            Tables\Columns\TextColumn::make('product.name')
-                ->label('Product')
-                ->searchable()
-                ->sortable()
-                ->weight('bold'),
+                Tables\Columns\TextColumn::make('product.name')
+                    ->label('Product')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
 
-            Tables\Columns\TextColumn::make('warehouse.name')
-                ->label('Location')
-                ->badge()
-                ->color('info'),
+                Tables\Columns\TextColumn::make('product.category.name')
+                    ->label('Category')
+                    ->badge()
+                    ->color('gray')
+                    ->placeholder('—'),
 
-            Tables\Columns\TextColumn::make('quantity')
-                ->label('Qty in Stock')
-                ->sortable()
-                ->formatStateUsing(fn (StockLevel $record) =>
-                    $record->quantity . ' ' . $record->product->unit
-                )
-                ->color(fn (StockLevel $record): string => match(true) {
-                    $record->quantity <= 0                               => 'danger',
-                    $record->quantity <= $record->product->reorder_point => 'warning',
-                    default                                              => 'success',
-                })
-                ->weight('bold')
-                ->description(fn (StockLevel $record): string => match(true) {
-                    $record->quantity <= 0                               => '⚠ Out of stock',
-                    $record->quantity <= $record->product->reorder_point => '⚠ Running low',
-                    default                                              => 'Sufficient',
-                }),
+                Tables\Columns\TextColumn::make('warehouse.name')
+                    ->label('Warehouse')
+                    ->badge()
+                    ->color('info'),
 
-            Tables\Columns\TextColumn::make('product.category.name')
-                ->label('Category')
-                ->badge()
-                ->color('gray')
-                ->placeholder('No category')
-                ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('quantity')
+                    ->label('Qty in Stock')
+                    ->sortable()
+                    ->formatStateUsing(fn (StockLevel $record) =>
+                        $record->quantity . ' ' . $record->product->unit
+                    )
+                    ->color(fn (StockLevel $record): string => match(true) {
+                        $record->quantity <= 0                               => 'danger',
+                        $record->quantity <= $record->product->reorder_point => 'warning',
+                        default                                              => 'success',
+                    })
+                    ->weight('bold')
+                    ->description(fn (StockLevel $record): string => match(true) {
+                        $record->quantity <= 0                               => '⚠ Out of stock',
+                        $record->quantity <= $record->product->reorder_point => '⚠ Running low — reorder point: ' . $record->product->reorder_point,
+                        default                                              => 'Sufficient',
+                    }),
 
-            Tables\Columns\TextColumn::make('product.supplier.name')
-                ->label('Supplier')
-                ->placeholder('—')
-                ->toggleable(isToggledHiddenByDefault: true),
-
-            Tables\Columns\TextColumn::make('updated_at')
-                ->label('Last Updated')
-                ->since()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-        ])
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Last Updated')
+                    ->since()
+                    ->sortable(),
+            ])
             ->filters([
                 Tables\Filters\SelectFilter::make('warehouse')
                     ->relationship('warehouse', 'name')
-                    ->label('Filter by Location'),
+                    ->label('Filter by Warehouse'),
 
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('product.category', 'name')
                     ->label('Filter by Category'),
 
                 Tables\Filters\Filter::make('low_stock')
-                    ->label('Show Low Stock Only')
+                    ->label('Low Stock Only')
                     ->query(fn ($query) =>
                         $query->whereHas('product', fn ($q) =>
                             $q->whereRaw('stock_levels.quantity <= products.reorder_point')
@@ -99,22 +96,25 @@ class StockLevelResource extends Resource
                     ->toggle(),
 
                 Tables\Filters\Filter::make('out_of_stock')
-                    ->label('Show Out of Stock Only')
+                    ->label('Out of Stock Only')
                     ->query(fn ($query) => $query->where('quantity', '<=', 0))
                     ->toggle(),
             ])
-
             ->actions([
                 Tables\Actions\Action::make('addStock')
                     ->label('Add Stock')
                     ->icon('heroicon-m-plus-circle')
                     ->color('success')
+                    ->visible(fn () => auth()->user()->hasAnyRole([
+                        'Admin', 'HR Approver',
+                    ]))
                     ->form([
                         Forms\Components\Placeholder::make('product_info')
                             ->label('Product')
                             ->content(fn (StockLevel $record) =>
-                                $record->product->name . ' — currently ' .
-                                $record->quantity . ' ' . $record->product->unit .
+                                $record->product->name .
+                                ' — currently ' . $record->quantity .
+                                ' ' . $record->product->unit .
                                 ' in ' . $record->warehouse->name
                             ),
 
@@ -127,12 +127,11 @@ class StockLevelResource extends Resource
 
                         Forms\Components\TextInput::make('reference')
                             ->label('Reference (optional)')
-                            ->placeholder('e.g. Invoice number, PO number, delivery note')
+                            ->placeholder('e.g. Invoice number, PO number')
                             ->maxLength(255),
 
                         Forms\Components\Textarea::make('notes')
                             ->label('Notes (optional)')
-                            ->placeholder('e.g. Received from supplier, transferred from HQ')
                             ->rows(2),
                     ])
                     ->action(function (StockLevel $record, array $data) {
@@ -146,8 +145,8 @@ class StockLevelResource extends Resource
                         );
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Stock added successfully')
-                            ->body("{$data['quantity']} {$record->product->unit} added to {$record->product->name}")
+                            ->title("Added {$data['quantity']} units to {$record->product->name}")
+                            ->body("Warehouse: {$record->warehouse->name}")
                             ->success()
                             ->send();
                     }),
@@ -156,12 +155,16 @@ class StockLevelResource extends Resource
                     ->label('Remove Stock')
                     ->icon('heroicon-m-minus-circle')
                     ->color('danger')
+                    ->visible(fn () => auth()->user()->hasAnyRole([
+                        'Admin', 'HR Approver',
+                    ]))
                     ->form([
                         Forms\Components\Placeholder::make('product_info')
                             ->label('Product')
                             ->content(fn (StockLevel $record) =>
-                                $record->product->name . ' — currently ' .
-                                $record->quantity . ' ' . $record->product->unit .
+                                $record->product->name .
+                                ' — currently ' . $record->quantity .
+                                ' ' . $record->product->unit .
                                 ' in ' . $record->warehouse->name
                             ),
 
@@ -175,18 +178,17 @@ class StockLevelResource extends Resource
                         Forms\Components\Select::make('reason')
                             ->label('Why are you removing this stock?')
                             ->options([
-                                'Used by field technician'     => 'Used by field technician',
-                                'Issued to department'         => 'Issued to department',
-                                'Damaged or defective'         => 'Damaged or defective',
-                                'Lost or missing'              => 'Lost or missing',
-                                'Returned to supplier'         => 'Returned to supplier',
-                                'Other'                        => 'Other',
+                                'Used by field technician' => 'Used by field technician',
+                                'Issued to department'     => 'Issued to department',
+                                'Damaged or defective'     => 'Damaged or defective',
+                                'Lost or missing'          => 'Lost or missing',
+                                'Returned to supplier'     => 'Returned to supplier',
+                                'Other'                    => 'Other',
                             ])
                             ->required(),
 
                         Forms\Components\TextInput::make('reference')
                             ->label('Reference (optional)')
-                            ->placeholder('e.g. Work order number, department name')
                             ->maxLength(255),
 
                         Forms\Components\Textarea::make('notes')
@@ -200,21 +202,29 @@ class StockLevelResource extends Resource
                             quantity:    $data['quantity'],
                             type:        'issue',
                             reference:   $data['reference'] ?? null,
-                            notes:       ($data['reason'] ?? '') . ($data['notes'] ? ' — ' . $data['notes'] : ''),
+                            notes:       ($data['reason'] ?? '') .
+                                ($data['notes'] ? ' — ' . $data['notes'] : ''),
                         );
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Stock removed successfully')
-                            ->body("{$data['quantity']} {$record->product->unit} removed from {$record->product->name}")
+                            ->title("Removed {$data['quantity']} units from {$record->product->name}")
+                            ->body("Warehouse: {$record->warehouse->name}")
                             ->success()
                             ->send();
                     }),
+
+                Tables\Actions\Action::make('history')
+                    ->label('History')
+                    ->icon('heroicon-m-clock')
+                    ->color('gray')
+                    ->url(fn (StockLevel $record) =>
+                        route('filament.admin.resources.stock-movements.index') .
+                        '?tableFilters[warehouse][value]=' . $record->warehouse_id
+                    ),
             ])
-
             ->bulkActions([])
-
             ->emptyStateHeading('No stock records yet')
-            ->emptyStateDescription('Stock levels appear here automatically once you add stock movements.')
+            ->emptyStateDescription('Stock levels appear here automatically when stock is added.')
             ->emptyStateIcon('heroicon-o-clipboard-document-check');
     }
 

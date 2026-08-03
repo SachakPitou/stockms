@@ -1,0 +1,297 @@
+[90m= [39m[
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mNotebook[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Warehouse[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m5[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mOffice Pen[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Warehouse[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m15[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHuawei EchoLife HG8145V5 ONU[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m120[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHuawei EchoLife HG8145V5 ONU[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m45[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHuawei EchoLife HG8145V5 ONU[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m30[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHuawei MA5608T OLT Chassis[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m7[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHuawei MA5608T OLT Chassis[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m2[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mMikroTik RB960PGS hEX PoE[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m23[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mMikroTik RB960PGS hEX PoE[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m12[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mMikroTik RB960PGS hEX PoE[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m5[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCisco SG350-28 Managed Switch[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m6[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCisco SG350-28 Managed Switch[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mUbiquiti UniFi AP AC LR[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m14[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mUbiquiti UniFi AP AC LR[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m8[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mUbiquiti UniFi AP AC LR[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSingle Mode Fiber Optic Cable (per meter)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3500[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSingle Mode Fiber Optic Cable (per meter)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m1200[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSingle Mode Fiber Optic Cable (per meter)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m800[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCAT6 UTP Cable (per meter)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m2200[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCAT6 UTP Cable (per meter)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m800[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCAT6 UTP Cable (per meter)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m400[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSC/APC Fiber Connector (box of 100)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m12[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSC/APC Fiber Connector (box of 100)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m6[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSC/APC Fiber Connector (box of 100)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m2[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mRJ45 Connector (bag of 100)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m18[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mRJ45 Connector (bag of 100)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m10[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mRJ45 Connector (bag of 100)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m4[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSIM Card — Blank Programmable[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m150[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSIM Card — Blank Programmable[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m80[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSIM Card Tray Adapter Set[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m35[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSIM Card Tray Adapter Set[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m20[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mAPC UPS 1500VA[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m5[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mAPC UPS 1500VA[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mAPC UPS 1500VA[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m6[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32m48V PoE Injector[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m22[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32m48V PoE Injector[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m14[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32m48V PoE Injector[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m6[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSolar Panel 100W Monocrystalline[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mSolar Panel 100W Monocrystalline[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m2[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mFiber Optic Cleaver[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m4[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mFiber Optic Cleaver[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m6[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mFiber Optic Cleaver[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m1[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mOptical Power Meter[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m2[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mOptical Power Meter[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m5[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mOptical Power Meter[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m1[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCable Crimping Tool Set[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m8[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCable Crimping Tool Set[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m12[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mCable Crimping Tool Set[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHikvision IP Camera 4MP[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m18[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHikvision IP Camera 4MP[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m4[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHikvision IP Camera 4MP[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m5[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mNVR 16 Channel[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m4[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mNVR 16 Channel[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mField Tech Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m1[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mA4 Paper (ream 500 sheets)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m45[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mA4 Paper (ream 500 sheets)[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mBranch Store[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m10[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mMikroTik RB960PGS hEX PoE[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Warehouse[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m1[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHuawei EchoLife HG8145V5 ONU[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Warehouse[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m0[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mHuawei HG8145V5 ONU[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Warehouse[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3[39m,
+    ],
+    [
+      [34m"[39m[34mproduct[39m[34m"[39m => [32m"[39m[32mTP-Link Archer C6[39m[32m"[39m,
+      [34m"[39m[34mwarehouse[39m[34m"[39m => [32m"[39m[32mMain Store — Head Office[39m[32m"[39m,
+      [34m"[39m[34mquantity[39m[34m"[39m => [35m3[39m,
+    ],
+  ]

@@ -76,4 +76,8 @@ class CategoryResource extends Resource
             'edit'   => Pages\EditCategory::route('/{record}/edit'),
         ];
     }
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
+    }
 }

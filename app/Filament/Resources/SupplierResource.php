@@ -32,6 +32,11 @@ class SupplierResource extends Resource
                         ->required()
                         ->maxLength(100),
 
+                    Forms\Components\Textarea::make('address')
+                        ->label('Address')
+                        ->rows(2)
+                        ->columnSpanFull(),
+
                     Forms\Components\Select::make('currency')
                         ->options([
                             'USD' => 'USD — US Dollar',
@@ -60,7 +65,6 @@ class SupplierResource extends Resource
                     Forms\Components\TextInput::make('contact_email')
                         ->email()
                         ->maxLength(255),
-
                     Forms\Components\TextInput::make('contact_phone')
                         ->tel()
                         ->maxLength(50),
@@ -96,7 +100,10 @@ class SupplierResource extends Resource
                     ->searchable()
                     ->badge()
                     ->color('gray'),
-
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Address')
+                    ->limit(30)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('currency')
                     ->badge()
                     ->color('info'),
@@ -140,5 +147,26 @@ class SupplierResource extends Resource
             'create' => Pages\CreateSupplier::route('/create'),
             'edit'   => Pages\EditSupplier::route('/{record}/edit'),
         ];
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->hasRole('Admin');
+    }
+    public static function canAccess(): bool
+    {
+        return auth()->check() &&
+            auth()->user()->hasAnyRole([
+                'Admin', 'HR Approver', 'HR Verifier',
+            ]);
     }
 }

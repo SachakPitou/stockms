@@ -79,8 +79,8 @@ class LowStockTable extends BaseWidget
                     ->icon('heroicon-m-shopping-cart')
                     ->color('warning')
                     ->url(fn (Product $record) =>
-                        route('filament.admin.resources.purchase-orders.create')
-                    ),
+                            route('filament.admin.resources.purchase-requests.create')
+                        ),
             ])
             ->emptyStateHeading('All products have sufficient stock')
             ->emptyStateIcon('heroicon-o-check-circle')
