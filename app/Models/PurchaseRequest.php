@@ -17,7 +17,7 @@ class PurchaseRequest extends Model
         'pr_number', 'supplier_id', 'warehouse_id',
         'requested_by', 'verified_by', 'approved_by',
         'status', 'reason', 'rejection_reason',
-        'verification_comment', 'notes',
+        'verification_comment', 'notes', 'attachment_path',
         'submitted_at', 'verified_at', 'approved_at',
     ];
 

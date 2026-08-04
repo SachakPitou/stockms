@@ -119,6 +119,17 @@ class ViewPurchaseRequest extends ViewRecord
                                 ->placeholder('—'),
                         ])->columns(4),
                 ]),
+            Infolists\Components\Section::make('Supporting Document')
+                ->visible(fn ($record) => filled($record->attachment_path))
+                ->schema([
+                    Infolists\Components\ViewEntry::make('attachment_preview')
+                        ->label('')
+                        ->view('filament.infolists.pdf-preview')
+                        ->viewData(fn ($record) => [
+                            'url' => \Illuminate\Support\Facades\Storage::url($record->attachment_path),
+                        ]),
+                ]),
         ]);
+        
     }
 }

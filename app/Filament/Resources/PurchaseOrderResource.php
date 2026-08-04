@@ -30,6 +30,12 @@ class PurchaseOrderResource extends Resource
             ]);
     }
 
+    public static function canCreate(): bool
+    {
+        return auth()->check() &&
+            auth()->user()->hasAnyRole(['Admin', 'HR Approver', 'HR Verifier']);
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -37,38 +43,57 @@ class PurchaseOrderResource extends Resource
                 ->schema([
                     Forms\Components\TextInput::make('po_number')
                         ->label('PO Number')
+                        ->default('PO-' . strtoupper(Str::random(8)))
                         ->required()
                         ->unique(ignoreRecord: true)
-                        ->disabled(),
+                        ->disabled(fn (string $operation) => $operation === 'edit')
+                        ->dehydrated(),
 
                     Forms\Components\Select::make('status')
                         ->label('Order Status')
                         ->options([
-                            'draft'    => '📝 Draft',
-                            'ordered'  => '📤 Ordered — sent to supplier',
-                            'shipped'  => '🚢 Shipped — on the way',
-                            'received' => '✅ Received',
-                            'cancelled'=> '❌ Cancelled',
+                            'draft'     => '📝 Draft',
+                            'ordered'   => '📤 Ordered — sent to supplier',
+                            'shipped'   => '🚢 Shipped — on the way',
+                            'received'  => '✅ Received',
+                            'cancelled' => '❌ Cancelled',
                         ])
-                        ->disabled()
-                        ->default('draft'),
+                        ->default('draft')
+                        ->disabled(fn (string $operation) => $operation === 'edit')
+                        ->dehydrated(),
 
                     Forms\Components\Select::make('supplier_id')
                         ->label('Supplier')
                         ->options(Supplier::where('is_active', true)->pluck('name', 'id'))
-                        ->disabled()
-                        ->required(),
+                        ->searchable()
+                        ->preload()
+                        ->required()
+                        ->disabled(fn (string $operation) => $operation === 'edit')
+                        ->dehydrated(),
 
                     Forms\Components\Select::make('warehouse_id')
                         ->label('Deliver To')
                         ->options(Warehouse::pluck('name', 'id'))
-                        ->disabled()
-                        ->required(),
+                        ->required()
+                        ->disabled(fn (string $operation) => $operation === 'edit')
+                        ->dehydrated()
+                        ->helperText('All incoming stock is received here first.'),
+
+                    Forms\Components\Select::make('destination_warehouse_id')
+                        ->label('Ultimately For (optional)')
+                        ->options(Warehouse::pluck('name', 'id'))
+                        ->nullable()
+                        ->disabled(fn (string $operation) => $operation === 'edit')
+                        ->dehydrated()
+                        ->helperText('If this stock is meant for a different branch than the delivery warehouse, select it here. A transfer will be suggested after receiving.'),
 
                     Forms\Components\DatePicker::make('order_date')
                         ->label('Order Date')
+                        ->default(now())
                         ->displayFormat('d M Y')
-                        ->disabled(),
+                        ->required()
+                        ->disabled(fn (string $operation) => $operation === 'edit')
+                        ->dehydrated(),
 
                     Forms\Components\DatePicker::make('expected_date')
                         ->label('Expected Arrival')
@@ -77,12 +102,54 @@ class PurchaseOrderResource extends Resource
                     Forms\Components\TextInput::make('tracking_number')
                         ->label('Tracking Number')
                         ->placeholder('e.g. DHL-001234'),
-
-                    Forms\Components\TextInput::make('total')
-                        ->label('Total Order Value')
-                        ->numeric()
-                        ->prefix('$'),
                 ])->columns(2),
+
+            Forms\Components\Section::make('Items Being Ordered')
+                ->description('Add each product and the quantity you are ordering. Not editable after creation — use Receive Stock to record what arrives.')
+                ->schema([
+                    Forms\Components\Repeater::make('items')
+                        ->relationship()
+                        ->schema([
+                            Forms\Components\Select::make('product_id')
+                                ->label('Product')
+                                ->options(
+                                    Product::where('is_active', true)
+                                        ->get()
+                                        ->mapWithKeys(fn ($p) => [
+                                            $p->id => $p->name . ' (' . $p->unit . ')'
+                                        ])
+                                )
+                                ->searchable()
+                                ->preload()
+                                ->required()
+                                ->columnSpan(4),
+
+                            Forms\Components\TextInput::make('qty_ordered')
+                                ->label('Quantity')
+                                ->numeric()
+                                ->required()
+                                ->default(1)
+                                ->minValue(1)
+                                ->columnSpan(2),
+
+                            Forms\Components\TextInput::make('unit_price')
+                                ->label('Unit Price')
+                                ->numeric()
+                                ->prefix('$')
+                                ->default(0)
+                                ->columnSpan(2),
+
+                            Forms\Components\TextInput::make('customisation')
+                                ->label('Special Instructions')
+                                ->placeholder('e.g. Pre-configured, branded, specific colour')
+                                ->columnSpan(4),
+                        ])
+                        ->columns(8)
+                        ->addActionLabel('+ Add Another Product')
+                        ->defaultItems(1)
+                        ->disabled(fn (string $operation) => $operation === 'edit')
+                        ->dehydrated(),
+                ]),
 
             Forms\Components\Section::make('Costs & Currency')
                 ->collapsed()
@@ -103,6 +170,12 @@ class PurchaseOrderResource extends Resource
 
                     Forms\Components\TextInput::make('customs_duty')
                         ->numeric()->prefix('$')->default(0),
+
+                    Forms\Components\TextInput::make('total')
+                        ->label('Total Order Value')
+                        ->numeric()
+                        ->prefix('$')
+                        ->default(0),
                 ])->columns(2),
 
             Forms\Components\Section::make('Notes')
@@ -164,12 +237,14 @@ class PurchaseOrderResource extends Resource
                     ->label('Deliver To')
                     ->badge()
                     ->color('info'),
+
                 Tables\Columns\TextColumn::make('destinationWarehouse.name')
                     ->label('Ultimately For')
                     ->badge()
                     ->color('warning')
                     ->placeholder('—')
                     ->visible(fn ($record) => $record && $record->destination_warehouse_id !== $record->warehouse_id),
+
                 Tables\Columns\TextColumn::make('items_count')
                     ->label('Items')
                     ->counts('items')
@@ -197,12 +272,13 @@ class PurchaseOrderResource extends Resource
                     ->label('Edit / Manage'),
             ]);
     }
-
     public static function getPages(): array
     {
         return [
             'index'  => Pages\ListPurchaseOrders::route('/'),
+            'create' => Pages\CreatePurchaseOrder::route('/create'),
             'edit'   => Pages\EditPurchaseOrder::route('/{record}/edit'),
         ];
     }
+    
 }

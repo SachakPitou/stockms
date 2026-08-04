@@ -186,15 +186,30 @@ class ProductResource extends Resource
                         $seesAll = \App\Helpers\WarehouseHelper::seesAllWarehouses();
 
                         if ($record->is_serialized) {
-                            $unitsQuery = $record->equipmentUnits();
                             if (! $seesAll) {
-                                $unitsQuery->where('warehouse_id', auth()->user()?->warehouse_id);
-                            }
-                            $available = (clone $unitsQuery)->whereIn('condition', ['new', 'refurbished'])->count();
-                            $inUse     = (clone $unitsQuery)->where('condition', 'in_use')->count();
-                            $total     = (clone $unitsQuery)->count();
+                                $warehouseId = auth()->user()?->warehouse_id;
 
-                            return "{$total} units ({$available} available, {$inUse} in use)";
+                                $pending = $record->stockLevels->firstWhere('warehouse_id', $warehouseId)?->quantity ?? 0;
+                                $serialized = $record->equipmentUnits()
+                                    ->where('warehouse_id', $warehouseId)
+                                    ->whereIn('condition', ['new', 'refurbished'])
+                                    ->count();
+                                $inUse = $record->equipmentUnits()
+                                    ->where('warehouse_id', $warehouseId)
+                                    ->where('condition', 'in_use')
+                                    ->count();
+
+                                $total = $pending + $serialized;
+                                return "{$total} {$record->unit}" . ($inUse > 0 ? " ({$inUse} in use)" : '');
+                            }
+
+                            // Admin/HR — total across all warehouses, with breakdown
+                            $pendingTotal = $record->stockLevels->sum('quantity');
+                            $serializedTotal = $record->equipmentUnits()->whereIn('condition', ['new', 'refurbished'])->count();
+                            $inUseTotal = $record->equipmentUnits()->where('condition', 'in_use')->count();
+
+                            $total = $pendingTotal + $serializedTotal;
+                            return "{$total} {$record->unit} ({$serializedTotal} serialized, {$pendingTotal} pending, {$inUseTotal} in use)";
                         }
 
                         if (! $seesAll) {
@@ -202,7 +217,6 @@ class ProductResource extends Resource
                             return ($level->quantity ?? 0) . ' ' . $record->unit;
                         }
 
-                        // Admin/HR — total + breakdown per warehouse
                         $total = $record->stockLevels->sum('quantity');
                         $breakdown = $record->stockLevels
                             ->filter(fn ($l) => $l->quantity > 0)
@@ -212,10 +226,14 @@ class ProductResource extends Resource
                         return $total . ' ' . $record->unit . ($breakdown ? " ({$breakdown})" : '');
                     })
                     ->wrap()
-                    ->color(fn ($record): string => match(true) {
-                        $record->is_serialized => 'gray', // color logic below overrides this for serialized case if needed
-                        $record->stockLevels->sum('quantity') <= $record->reorder_point => 'danger',
-                        default => 'success',
+                    ->color(function ($record): string {
+                        if ($record->is_serialized) {
+                            $pending = $record->stockLevels->sum('quantity');
+                            $serialized = $record->equipmentUnits()->whereIn('condition', ['new', 'refurbished'])->count();
+                            $available = $pending + $serialized;
+                            return $available <= $record->reorder_point ? 'danger' : 'success';
+                        }
+                        return $record->stockLevels->sum('quantity') <= $record->reorder_point ? 'danger' : 'success';
                     }),
                 Tables\Columns\TextColumn::make('total_stock')
                     ->label('Stock by Warehouse')

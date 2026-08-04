@@ -67,4 +67,5 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(Warehouse::class, 'destination_warehouse_id');
     }
+
 }

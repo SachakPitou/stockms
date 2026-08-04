@@ -56,20 +56,27 @@ class StockLevelResource extends Resource
 
                 Tables\Columns\TextColumn::make('quantity')
                     ->label('Qty in Stock')
-                    ->sortable()
-                    ->formatStateUsing(fn (StockLevel $record) =>
-                        $record->quantity . ' ' . $record->product->unit
-                    )
-                    ->color(fn (StockLevel $record): string => match(true) {
-                        $record->quantity <= 0                               => 'danger',
-                        $record->quantity <= $record->product->reorder_point => 'warning',
-                        default                                              => 'success',
+                    ->getStateUsing(function (StockLevel $record) {
+                        if ($record->product->is_serialized) {
+                            $serialized = $record->product->equipmentUnits()
+                                ->where('warehouse_id', $record->warehouse_id)
+                                ->whereIn('condition', ['new', 'refurbished'])
+                                ->count();
+                            $pending = $record->quantity;
+                            return ($serialized + $pending) . ' ' . $record->product->unit;
+                        }
+                        return $record->quantity . ' ' . $record->product->unit;
                     })
-                    ->weight('bold')
-                    ->description(fn (StockLevel $record): string => match(true) {
-                        $record->quantity <= 0                               => '⚠ Out of stock',
-                        $record->quantity <= $record->product->reorder_point => '⚠ Running low — reorder point: ' . $record->product->reorder_point,
-                        default                                              => 'Sufficient',
+                    ->color(function (StockLevel $record): string {
+                        $qty = $record->product->is_serialized
+                            ? $record->product->equipmentUnits()->where('warehouse_id', $record->warehouse_id)->whereIn('condition', ['new', 'refurbished'])->count()
+                            : $record->quantity;
+
+                        return match(true) {
+                            $qty <= 0                               => 'danger',
+                            $qty <= $record->product->reorder_point => 'warning',
+                            default                                  => 'success',
+                        };
                     }),
 
                 Tables\Columns\TextColumn::make('updated_at')
