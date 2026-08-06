@@ -235,9 +235,8 @@ class EquipmentUnitResource extends Resource
     }
     public static function canCreate(): bool
     {
-        return auth()->user()->hasAnyRole(['Admin', 'HR Approver', 'HR Staff']);
+        return false;
     }
-
     public static function canEdit($record): bool
     {
         // Everyone with warehouse access can fix a typo'd serial;
