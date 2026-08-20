@@ -85,6 +85,6 @@ class ActivityLogResource extends Resource
     }
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'Verify Team', 'Approval Team']);
     }
 }

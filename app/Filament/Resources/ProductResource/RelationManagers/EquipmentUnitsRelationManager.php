@@ -92,7 +92,7 @@ class EquipmentUnitsRelationManager extends RelationManager
                     ->label('Bulk Add Units')
                     ->icon('heroicon-o-queue-list')
                     ->color('primary')
-                    ->visible(fn () => auth()->user()->hasAnyRole(['Admin', 'HR Approver', 'HR Staff']))
+                    ->visible(fn () => auth()->user()->hasAnyRole(['Admin', 'Approval Team', 'HR Staff']))
                     ->form([
                         Forms\Components\Select::make('warehouse_id')
                             ->relationship('warehouse', 'name')

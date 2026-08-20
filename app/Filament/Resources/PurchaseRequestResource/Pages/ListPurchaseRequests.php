@@ -47,7 +47,7 @@ class ListPurchaseRequests extends ListRecords
     //             ->badge(fn () => PurchaseRequest::where('requested_by', $user->id)->count());
     //     }
 
-    //     if ($user->hasAnyRole(['Admin', 'HR Verifier'])) {
+    //     if ($user->hasAnyRole(['Admin', 'Verify Team'])) {
     //         $tabs['needs_verification'] = Tab::make('Needs Verification')
     //             ->modifyQueryUsing(function (?Builder $q) {
     //                 if (! $q) return $q;
@@ -57,7 +57,7 @@ class ListPurchaseRequests extends ListRecords
     //             ->badgeColor('warning');
     //     }
 
-    //     if ($user->hasAnyRole(['Admin', 'HR Approver'])) {
+    //     if ($user->hasAnyRole(['Admin', 'Approval Team'])) {
     //         $tabs['needs_approval'] = Tab::make('Needs Approval')
     //             ->modifyQueryUsing(function (?Builder $q) {
     //                 if (! $q) return $q;

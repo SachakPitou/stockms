@@ -150,12 +150,12 @@ class SupplierResource extends Resource
     }
     public static function canCreate(): bool
     {
-        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'Verify Team', 'Approval Team']);
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'Verify Team', 'Approval Team']);
     }
 
     public static function canDelete($record): bool
@@ -166,7 +166,7 @@ class SupplierResource extends Resource
     {
         return auth()->check() &&
             auth()->user()->hasAnyRole([
-                'Admin', 'HR Approver', 'HR Verifier',
+                'Admin', 'Approval Team', 'Verify Team',
             ]);
     }
 }

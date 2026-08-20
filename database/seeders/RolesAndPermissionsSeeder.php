@@ -75,8 +75,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'Admin']);
         $admin->syncPermissions(Permission::all());
 
-        // ── HR Verifier — step B ──────────────────────────────────────
-        $verifier = Role::firstOrCreate(['name' => 'HR Verifier']);
+        // ── Verify Team — step B ──────────────────────────────────────
+        $verifier = Role::firstOrCreate(['name' => 'Verify Team']);
         $verifier->syncPermissions([
             'view stock',
             'view products',
@@ -89,8 +89,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'view activity log',
         ]);
 
-        // ── HR Approver — step C ──────────────────────────────────────
-        $approver = Role::firstOrCreate(['name' => 'HR Approver']);
+        // ── Approval Team — step C ──────────────────────────────────────
+        $approver = Role::firstOrCreate(['name' => 'Approval Team']);
         $approver->syncPermissions([
             'view stock', 'add stock', 'remove stock', 'transfer stock',
             'view products', 'manage products',
@@ -139,8 +139,8 @@ class RolesAndPermissionsSeeder extends Seeder
             ['Role', 'Purpose'],
             [
                 ['Admin',                'Full access — everything'],
-                ['HR Verifier',          'Step B — review and verify PRs'],
-                ['HR Approver',          'Step C — approve PRs, manage POs and stock'],
+                ['Verify Team',          'Step B — review and verify PRs'],
+                ['Approval Team',          'Step C — approve PRs, manage POs and stock'],
                 ['Technical Team PP',    'Create PRs, manage PP customers'],
                 ['Technical Team Poipet','Create PRs, manage Poipet customers'],
             ]

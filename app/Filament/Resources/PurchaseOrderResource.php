@@ -26,14 +26,14 @@ class PurchaseOrderResource extends Resource
     {
         return auth()->check() &&
             auth()->user()->hasAnyRole([
-                'Admin', 'HR Approver', 'HR Verifier',
+                'Admin', 'Approval Team', 'Verify Team',
             ]);
     }
 
     public static function canCreate(): bool
     {
         return auth()->check() &&
-            auth()->user()->hasAnyRole(['Admin', 'HR Approver', 'HR Verifier']);
+            auth()->user()->hasAnyRole(['Admin', 'Approval Team', 'Verify Team']);
     }
 
     public static function form(Form $form): Form

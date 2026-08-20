@@ -15,7 +15,7 @@ class ListEquipmentUnits extends ListRecords
         return [
             Actions\CreateAction::make()
                 ->label('Register New Unit')
-                ->visible(fn () => auth()->user()->hasAnyRole(['Admin', 'HR Approver', 'HR Staff'])),
+                ->visible(fn () => auth()->user()->hasAnyRole(['Admin', 'Approval Team', 'HR Staff'])),
         ];
     }
 }

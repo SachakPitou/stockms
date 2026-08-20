@@ -10,7 +10,7 @@ class WarehouseHelper
     public static function seesAllWarehouses(): bool
     {
         return auth()->check() &&
-            auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver', 'Approver']);
+            auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'Verify Team', 'Approval Team', 'Approver']);
     }
 
     /**

@@ -332,12 +332,12 @@ class ProductResource extends Resource
     }
     public static function canCreate(): bool
     {
-        return auth()->user()->hasAnyRole(['Admin', 'HR Approver']);
+        return auth()->user()->hasAnyRole(['Admin', 'Approval Team']);
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->user()->hasAnyRole(['Admin', 'HR Approver']);
+        return auth()->user()->hasAnyRole(['Admin', 'Approval Team']);
     }
 
     public static function canDelete($record): bool

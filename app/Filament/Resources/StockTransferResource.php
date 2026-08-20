@@ -169,7 +169,7 @@ class StockTransferResource extends Resource
                     ->color('success')
                     ->visible(fn (StockTransfer $record) =>
                         $record->status === 'pending' &&
-                        auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Approver', 'Approver'])
+                        auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'Approval Team', 'Approver'])
                     )
                     ->requiresConfirmation()
                     ->modalHeading('Approve Stock Transfer')
@@ -192,7 +192,7 @@ class StockTransferResource extends Resource
                     ->color('danger')
                     ->visible(fn (StockTransfer $record) =>
                         $record->status === 'pending' &&
-                        auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Approver', 'Approver'])
+                        auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'Approval Team', 'Approver'])
                     )
                     ->requiresConfirmation()
                     ->action(function (StockTransfer $record) {
@@ -215,7 +215,7 @@ class StockTransferResource extends Resource
                             'Technical Team Poipet',
                             'Admin',
                             'HR Staff',
-                            'HR Approver',
+                            'Approval Team',
                         ])
                     )
                     ->requiresConfirmation()

@@ -24,7 +24,7 @@ class EditPurchaseOrder extends EditRecord
                 ->color('info')
                 ->visible(fn () =>
                     $this->record->status === 'draft' &&
-                    auth()->user()->hasAnyRole(['Admin', 'HR Approver'])
+                    auth()->user()->hasAnyRole(['Admin', 'Approval Team'])
                 )
                 ->requiresConfirmation()
                 ->modalDescription('Confirm you have sent this order to the supplier.')
@@ -43,7 +43,7 @@ class EditPurchaseOrder extends EditRecord
                 ->color('warning')
                 ->visible(fn () =>
                     $this->record->status === 'ordered' &&
-                    auth()->user()->hasAnyRole(['Admin', 'HR Approver'])
+                    auth()->user()->hasAnyRole(['Admin', 'Approval Team'])
                 )
                 ->form([
                     Forms\Components\TextInput::make('tracking_number')
@@ -76,7 +76,7 @@ class EditPurchaseOrder extends EditRecord
                 ->color('success')
                 ->visible(fn () =>
                     $this->record->status === 'shipped' &&
-                    auth()->user()->hasAnyRole(['Admin', 'HR Approver'])
+                    auth()->user()->hasAnyRole(['Admin', 'Approval Team'])
                 )
                 ->form(function () {
                     $fields = [
@@ -164,7 +164,7 @@ class EditPurchaseOrder extends EditRecord
                 ->color('danger')
                 ->visible(fn () =>
                     !in_array($this->record->status, ['received', 'cancelled']) &&
-                    auth()->user()->hasAnyRole(['Admin', 'HR Approver'])
+                    auth()->user()->hasAnyRole(['Admin', 'Approval Team'])
                 )
                 ->requiresConfirmation()
                 ->action(function () {

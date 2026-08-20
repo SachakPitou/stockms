@@ -29,8 +29,8 @@ class PurchaseRequestResource extends Resource
         return auth()->check() &&
             auth()->user()->hasAnyRole([
                 'Admin',
-                'HR Verifier',
-                'HR Approver',
+                'Verify Team',
+                'Approval Team',
                 'Technical Team PP',
                 'Technical Team Poipet',
             ]);
@@ -279,7 +279,7 @@ class PurchaseRequestResource extends Resource
                         ->color('warning')
                         ->visible(fn (PurchaseRequest $record) =>
                             $record->status === 'pending_verification' &&
-                            auth()->user()->hasAnyRole(['Admin', 'HR Verifier'])
+                            auth()->user()->hasAnyRole(['Admin', 'Verify Team'])
                         )
                         ->form([
                             Forms\Components\Textarea::make('verification_comment')
@@ -309,7 +309,7 @@ class PurchaseRequestResource extends Resource
                         ->color('success')
                         ->visible(fn (PurchaseRequest $record) =>
                             $record->status === 'pending_approval' &&
-                            auth()->user()->hasAnyRole(['Admin', 'HR Approver'])
+                            auth()->user()->hasAnyRole(['Admin', 'Approval Team'])
                         )
                         ->form(function (PurchaseRequest $record) {
                             return [
@@ -411,9 +411,9 @@ class PurchaseRequestResource extends Resource
                         ->color('danger')
                         ->visible(fn (PurchaseRequest $record) =>
                             ($record->status === 'pending_verification' &&
-                                auth()->user()->hasAnyRole(['Admin', 'HR Verifier'])) ||
+                                auth()->user()->hasAnyRole(['Admin', 'Verify Team'])) ||
                             ($record->status === 'pending_approval' &&
-                                auth()->user()->hasAnyRole(['Admin', 'HR Approver']))
+                                auth()->user()->hasAnyRole(['Admin', 'Approval Team']))
                         )
                         ->form([
                             Forms\Components\Textarea::make('rejection_reason')

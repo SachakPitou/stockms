@@ -113,7 +113,7 @@ class StockLevelResource extends Resource
                     ->icon('heroicon-m-plus-circle')
                     ->color('success')
                     ->visible(fn () => auth()->user()->hasAnyRole([
-                        'Admin', 'HR Approver',
+                        'Admin', 'Approval Team',
                     ]))
                     ->form([
                         Forms\Components\Placeholder::make('product_info')
@@ -163,7 +163,7 @@ class StockLevelResource extends Resource
                     ->icon('heroicon-m-minus-circle')
                     ->color('danger')
                     ->visible(fn () => auth()->user()->hasAnyRole([
-                        'Admin', 'HR Approver',
+                        'Admin', 'Approval Team',
                     ]))
                     ->form([
                         Forms\Components\Placeholder::make('product_info')

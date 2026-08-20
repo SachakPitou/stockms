@@ -61,8 +61,8 @@ class UserResource extends Resource
                             ->label('Role')
                             ->options([
                                 'Admin'                   => 'Admin — Full system access',
-                                'HR Verifier'             => 'HR Verifier — Can verify purchase requests',
-                                'HR Approver'             => 'HR Approver — Can approve PRs and manage stock',
+                                'Verify Team'             => 'Verify Team — Can verify purchase requests',
+                                'Approval Team'             => 'Approval Team — Can approve PRs and manage stock',
                                 'Technical Team PP'       => 'Technical Team PP — Phnom Penh field team',
                                 'Technical Team Poipet'   => 'Technical Team Poipet — Poipet field team',
                             ])
@@ -138,6 +138,6 @@ class UserResource extends Resource
     }
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'HR Verifier', 'HR Approver']);
+        return auth()->user()->hasAnyRole(['Admin', 'HR Staff', 'Verify Team', 'Approval Team']);
     }
 }
